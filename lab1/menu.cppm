@@ -3,8 +3,10 @@ import classes;
 import functions;
 import std;
 
-export int menuf() {
-    while (true) {
+export int menuf() 
+{
+    while (true)
+    {
         std::cout << "[1] Демонстрация чтения-записи изображений" << std::endl;
         std::cout << "[2] Демонстрация умножения изображений" << std::endl;
         std::cout << "[3] Демонстрация сложения изображений" << std::endl;
@@ -15,12 +17,11 @@ export int menuf() {
         std::cout << "[8] Вычисление коэффициента заполнения изображения" << std::endl;
         std::cout << "[9] Инвертирование значений выше заданной прямой" << std::endl;
         std::cout << "[10] Выход" << std::endl;
-
-        int choice;
+        int choice = 0;
         std::cout << "\nВведите пункт меню: ";
         std::cin >> choice;
-
-        switch (choice) {
+        switch (choice) 
+        {
         case 1:
             readnwrite();
             break;

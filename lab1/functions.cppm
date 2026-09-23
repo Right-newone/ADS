@@ -9,11 +9,10 @@ export void readnwrite() {
     std::cout << "После записи: " << img(1, 2) << "\n";
     std::cout << "\n";
 }
-
 export void mult() {
-    image<short> img2(2, 3, true);
-    image<short> img3(3, 2, true);
-    image<short> result = img2 * img3;
+    image<bool> img2(2, 3, true);
+    image<bool> img3(2, 3, true);
+    image<bool> result = img2 * img3;
     std::cout << img2;
     std::cout << "   *    \n";
     std::cout << img3;
@@ -21,12 +20,11 @@ export void mult() {
     std::cout << result;    
     std::cout << "\n";
 }
-
 export void summ()
 {
-    image<short> img2(2, 3, true);
-    image<short> img3(2, 3, true);
-    image<short> result = img2 + img3;
+    image<bool> img2(2, 3, true);
+    image<bool> img3(2, 3, true);
+    image<bool> result = img2 + img3;
     std::cout << img2;
     std::cout << "   +    \n";
     std::cout << img3;
@@ -34,7 +32,6 @@ export void summ()
     std::cout << result;
     std::cout << "\n";
 }
-
 export void dif()
 {
     image<short> img2(2, 3, true);
@@ -47,7 +44,6 @@ export void dif()
     std::cout << result;
     std::cout << "\n";
 }
-
 export void multnconst()
 {
     image<short> img2(2, 2, true);
@@ -60,7 +56,6 @@ export void multnconst()
     std::cout << result;
     std::cout << "\n";
 }
-
 export void summnconst()
 {
     image<short> img2(2, 2, true);
@@ -73,24 +68,21 @@ export void summnconst()
     std::cout << result;
     std::cout << "\n";
 }
-
 export void invert()
 {
-    image<float> img2(2, 2, true);
-    image<float> result = !img2;
+    image<char> img2(2, 2, true);
+    image<char> result = !img2;
     std::cout << img2;
     std::cout << "   !    \n";
     std::cout << "   =    \n";
     std::cout << result;
     std::cout << "\n";
 }
- 
 export void ratio()
 {
     image<short> img2(2, 2, true);
     std::cout << "Изображение: \n" << img2 << "\n" << "Коэффициент заполнения: \n" << img2.ratio() << std::endl;
 }
-
 export void invertednline(image<short>& result, int x1, int y1, int x2, int y2)
 {
     for (int i = 0; i < result.getrows(); ++i)
@@ -107,7 +99,6 @@ export void invertednline(image<short>& result, int x1, int y1, int x2, int y2)
         }
     }
 }
-
 export void invertednlinedemo()
 {
     image<short> img(3, 2, true);
