@@ -42,7 +42,7 @@ public:
 	{
 		if (rows <= 0 || cols <= 0)
 		{
-			throw std::invalid_argument("image dimensions must be positive");
+			throw std::invalid_argument("image size must be positive");
 		}
 		_data = new T[_rows * _cols]{};
 
@@ -199,23 +199,23 @@ image<T> operator*(const image<T>& a, const image<T>& b)
 export template <typename T>
 image<T> operator+(const image<T>& a, const image<T>& b)
 {
-		int max_rows = std::max(a.getrows(), b.getrows());
-		int max_cols = std::max(a.getcols(), b.getcols());
-		image<T> result(max_rows, max_cols, false);
-		for (int i = 0; i < max_rows; ++i) {
-			for (int j = 0; j < max_cols; ++j) {
-				T first = T{};
-				T second = T{};
-				if (i < a.getrows() && j < a.getcols()) {
-					first = a(i, j);
-				}
-				if (i < b.getrows() && j < b.getcols()) {
-					second = b(i, j);
-				}
-				result(i, j) = first + second;
+	int max_rows = std::max(a.getrows(), b.getrows());
+	int max_cols = std::max(a.getcols(), b.getcols());
+	image<T> result(max_rows, max_cols, false);
+	for (int i = 0; i < max_rows; ++i) {
+		for (int j = 0; j < max_cols; ++j) {
+			T first = T{};
+			T second = T{};
+			if (i < a.getrows() && j < a.getcols()) {
+				first = a(i, j);
 			}
+			if (i < b.getrows() && j < b.getcols()) {
+				second = b(i, j);
+			}
+			result(i, j) = first + second;
 		}
-		return result;
+	}
+	return result;
 }
 export template <typename T>
 image<T> operator-(const image<T>& a, const image<T>& b)
@@ -273,11 +273,10 @@ T invertedvalue(T value)
 	{
 		return !value;
 	}
-	else if constexpr (std::is_same_v<T, char>)
+	else
 	{
 		return -value;
 	}
-	return value;
 }
 export template <typename T>
 image<T> operator!(const image<T>& a)

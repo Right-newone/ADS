@@ -22,9 +22,9 @@ export void mult() {
 }
 export void summ()
 {
-    image<bool> img2(2, 3, true);
-    image<bool> img3(2, 3, true);
-    image<bool> result = img2 + img3;
+    image<short> img2(2, 1, true);
+    image<short> img3(3, 4, true);
+    image<short> result = img2 + img3;
     std::cout << img2;
     std::cout << "   +    \n";
     std::cout << img3;
@@ -70,8 +70,8 @@ export void summnconst()
 }
 export void invert()
 {
-    image<char> img2(2, 2, true);
-    image<char> result = !img2;
+    image<bool> img2(2, 2, true);
+    image<bool> result = !img2;
     std::cout << img2;
     std::cout << "   !    \n";
     std::cout << "   =    \n";
