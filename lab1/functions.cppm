@@ -4,9 +4,9 @@ import std;
 
 export void readnwrite() {
     image<short> img(3, 4, false);
-    std::cout << "До записи: " << img(1, 2) << "\n";
+    std::cout << "Before: " << img(1, 2) << "\n";
     img(1, 2) = 75;
-    std::cout << "После записи: " << img(1, 2) << "\n";
+    std::cout << "After: " << img(1, 2) << "\n";
     std::cout << "\n";
 }
 export void mult() {
@@ -81,7 +81,7 @@ export void invert()
 export void ratio()
 {
     image<short> img2(2, 2, true);
-    std::cout << "Изображение: \n" << img2 << "\n" << "Коэффициент заполнения: \n" << img2.ratio() << std::endl;
+    std::cout << "Image: \n" << img2 << "\n" << "Ratio: \n" << img2.ratio() << std::endl;
 }
 export void invertednline(image<short>& result, int x1, int y1, int x2, int y2)
 {
@@ -106,11 +106,11 @@ export void invertednlinedemo()
     int y1 = 1;
     int x2 = 1;
     int y2 = 1;
-    std::cout << "Исходное изображение:\n";
+    std::cout << "Original image:\n";
     std::cout << img;
     std::cout << "\nПрямая: " << "(" << x1 << "," << y1 << ")" << " - " << "(" << x2 << "," << y2 << ")\n";
     invertednline(img, x1, y1, x2, y2);
-    std::cout << "\nПосле инвертирования выше прямой:\n";
+    std::cout << "\nAfter inverting the image:\n";
     std::cout << img;
     std::cout << '\n';
 }

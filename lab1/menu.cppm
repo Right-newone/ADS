@@ -6,18 +6,18 @@ export int menuf()
 {
     while (true)
     {
-        std::cout << "[1] Демонстрация чтения-записи изображений" << std::endl;
-        std::cout << "[2] Демонстрация умножения изображений" << std::endl;
-        std::cout << "[3] Демонстрация сложения изображений" << std::endl;
-        std::cout << "[4] Демонстрация вычитания изображений" << std::endl;
-        std::cout << "[5] Демонстрация умножения на константу изображения" << std::endl;
-        std::cout << "[6] Демонстрация сложения с константой изображения" << std::endl;
-        std::cout << "[7] Демонстрация инвертирования значений изображений" << std::endl;
-        std::cout << "[8] Вычисление коэффициента заполнения изображения" << std::endl;
-        std::cout << "[9] Инвертирование значений выше заданной прямой" << std::endl;
-        std::cout << "[10] Выход" << std::endl;
+        std::cout << "[1] Image read-write demonstration" << std::endl;
+        std::cout << "[2] Image multiplication demonstration" << std::endl;
+        std::cout << "[3] Image addition demonstration" << std::endl;
+        std::cout << "[4] Image subtraction demonstration" << std::endl;
+        std::cout << "[5] Image multiplication by a constant demonstration" << std::endl;
+        std::cout << "[6] Image addition with a constant demonstration" << std::endl;
+        std::cout << "[7] Image value inversion demonstration" << std::endl;
+        std::cout << "[8] Image fill factor calculation" << std::endl;
+        std::cout << "[9] Inversion of values above a given line" << std::endl;
+        std::cout << "[10] End session" << std::endl;
         int choice = 0;
-        std::cout << "\nВведите пункт меню: ";
+        std::cout << "\nEnter your choice: ";
         std::cin >> choice;
         switch (choice) 
         {
@@ -49,10 +49,10 @@ export int menuf()
             invertednlinedemo();
             break;
         case 10:
-            std::cout << "Выход из программы" << std::endl;
+            std::cout << "End of session" << std::endl;
             return 0;
         default:
-            std::cout << "Неверный выбор, попробуйте снова [1-10]" << std::endl;
+            std::cout << "Wrong choice, try again from [1-10]" << std::endl;
             break;
         }
     }
