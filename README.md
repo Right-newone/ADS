@@ -1,2 +1,2 @@
 # ADS
-Here will be ADS materials
+АИСД 2 курс 100503
