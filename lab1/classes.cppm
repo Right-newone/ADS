@@ -1,44 +1,60 @@
-import std;
 export module classes;
+import std;
 
 export template <typename T>
 T randomvalue()
 {
-	std::random_device seed;
-	std::mt19937 generator(seed());
-
-	if constexpr (std::is_same_v<T, bool>)
-	{
-		std::bernoulli_distribution distribution(0.5);
-		return distribution(generator);
-	}
-	else if constexpr (std::is_same_v<T, char>)
-	{
-		std::uniform_int_distribution<int> distribution(1, 100);
-		return static_cast<char>(distribution(generator));
-	}
-	else if constexpr (std::is_same_v<T, short>)
-	{
-		std::uniform_int_distribution<short> distribution(1, 100);
-		return distribution(generator);
-	}
-	else if constexpr (std::is_same_v<T, float>)
-	{
-		std::uniform_real_distribution<float> distribution(1, 100);
-		return distribution(generator);
-	}
 	return T{};
 }
+template <>
+bool randomvalue<bool>() {
+	std::random_device seed;
+	std::mt19937 generator(seed());
+	std::bernoulli_distribution distribution(0.5);
+	return distribution(generator);
+}
+template <>
+char randomvalue<char>() {
+	std::random_device seed;
+	std::mt19937 generator(seed());
+	std::uniform_int_distribution<int> distribution(1, 100);
+	return static_cast<char>(distribution(generator));
+}
+template<>
+short randomvalue<short>() {
+	std::random_device seed;
+	std::mt19937 generator(seed());
+	std::uniform_int_distribution<short> distribution(1, 100);
+	return distribution(generator);
+}
+template<>
+float randomvalue<float>() {
+	std::random_device seed;
+	std::mt19937 generator(seed());
+	std::uniform_real_distribution<float> distribution(1.0f, 100.0f);
+	return distribution(generator);
+}
+
+export template<typename T>
+T invertedvalue(T value)
+{
+	return -value;
+}
+template<>
+bool invertedvalue<bool>(bool value) {
+	return !value;
+}
+
 export template <typename T>
-class image 
+class image
 {
 private:
 	int _rows = 0;
 	int _cols = 0;
 	T* _data = nullptr;
 public:
-	static constexpr double epsilon = 1e-6;
-	image(int rows, int cols, bool randomfill) : _rows(rows), _cols(cols) 
+	const double epsilon = 1e-6;
+	image(int rows, int cols, bool randomfill) : _rows(rows), _cols(cols)
 	{
 		if (rows <= 0 || cols <= 0)
 		{
@@ -55,7 +71,7 @@ public:
 		}
 	}
 
-	image(const image& other) : _rows(other._rows),	_cols(other._cols),	_data(new T[other._rows * other._cols])
+	image(const image& other) : _rows(other._rows), _cols(other._cols), _data(new T[other._rows * other._cols])
 	{
 		for (int i = 0; i < _rows * _cols; ++i)
 		{
@@ -65,7 +81,7 @@ public:
 
 	image& operator=(const image& other)
 	{
-		if (this == &other) 
+		if (this == &other)
 		{
 			return *this;
 		}
@@ -105,7 +121,7 @@ public:
 		return _data[row * _cols + col];
 	}
 
-	const T& operator()(int row, int col) const 
+	const T& operator()(int row, int col) const
 	{
 		if (row < 0 || row >= _rows || col < 0 || col >= _cols)
 		{
@@ -132,196 +148,214 @@ public:
 		return result;
 	}
 
+	image<T> multy(const image& a);
+
+	image<T> operator*(const image<T>& a)
+	{
+		return multy(a);
+	}
+	
+	image<T> sum(const image& a);
+
+	image<T> operator+(const image<T>& a)
+	{
+		return sum(a);
+	}
+
+	image<T> operator-(const image<T>& a)
+	{
+		int max_rows = std::max(a._rows, _rows);
+		int max_cols = std::max(a._cols, _cols);
+		image<T> result(max_rows, max_cols, false);
+		for (int i = 0; i < max_rows; ++i) {
+			for (int j = 0; j < max_cols; ++j) {
+				T first = T{};
+				T second = T{};
+
+				if (i < a._rows && j < a._cols) {
+					first = a(i, j);
+				}
+				if (i < _rows && j < _cols) {
+					second = (*this)(i, j);
+				}
+				result(i, j) = second - first;
+			}
+		}
+		return result;
+	}
+
+	image<T> operator*(const int& num)
+	{
+		image<T> result(_rows, _cols, false);
+		for (int i = 0; i < _rows; ++i)
+		{
+			for (int j = 0; j < _cols; ++j)
+			{
+				result(i, j) = (*this)(i, j) * num;
+			}
+		}
+		return result;
+	}
+
+	image<T> operator+(const int& num)
+	{
+		image<T> result(_rows, _cols, false);
+
+		for (int i = 0; i < _rows; ++i)
+		{
+			for (int j = 0; j < _cols; ++j)
+			{
+				result(i, j) = (*this)(i, j) + num;
+			}
+		}
+		return result;
+	}
+
+	image<T> operator!()
+	{
+		image<T> result(_rows, _cols, false);
+		for (int i = 0; i < _rows; ++i)
+		{
+			for (int j = 0; j < _cols; ++j)
+			{
+				result(i, j) = invertedvalue((*this)(i, j));
+			}
+		}
+		return result;
+	}
+	template <typename T>
+	bool equal(const T& a, const T& b, double epsilon) {
+		return a == b;
+	}
+	bool equal(float a, float b, double epsilon) {
+		return std::abs(a - b) <= epsilon;
+	}
+	bool operator==(const image<T>& a)
+	{
+		if (a._rows != _rows || a._cols != _cols)
+		{
+			return false;
+		}
+		for (int i = 0; i < a._rows; ++i)
+		{
+			for (int j = 0; j < a._cols; ++j)
+			{
+				if (!equal(a(i, j), (*this)(i, j), epsilon))
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	~image()
 	{
 		delete[] _data;
 	}
 };
-export template <typename T>
-std::ostream& operator<<(std::ostream& out, const image<T>& image)
+
+template <typename T>
+image<T> image<T>::sum(const image<T>& a)
 {
-	for (int i = 0; i < image.getrows(); ++i)
+	int max_rows = std::max(a.getrows(), getrows());
+	int max_cols = std::max(a.getcols(), getcols());
+	image<T> result(max_rows, max_cols, false);
+	for (int i = 0; i < max_rows; ++i)
 	{
-		for (int j = 0; j < image.getcols(); ++j)
+		for (int j = 0; j < max_cols; ++j)
 		{
-			if constexpr (std::is_same_v<T, char>)
+			T first = T{};
+			T second = T{};
+			if (i < a.getrows() && j < a.getcols())
 			{
-				out << static_cast<int>(image(i, j)) << " ";
+				first = a(i, j);
 			}
-			else
+			if (i < getrows() && j < getcols())
 			{
-				out << image(i, j) << " ";
+				second = (*this)(i, j);
 			}
+			result(i, j) = first+second;
+		}
+	}
+	return result;
+}
+
+template <>
+image<bool> image<bool>::sum(const image<bool>& a)
+{
+	int max_rows = std::max(a.getrows(), getrows());
+	int max_cols = std::max(a.getcols(), getcols());
+	image<bool> result(max_rows, max_cols, false);
+	for (int i = 0; i < max_rows; ++i)
+	{
+		for (int j = 0; j < max_cols; ++j)
+		{
+			bool first = false;
+			bool second = false;
+
+			if (i < a.getrows() && j < a.getcols())
+				first = a(i, j);
+
+			if (i < getrows() && j < getcols())
+				second = (*this)(i, j);
+
+			result(i, j) = first || second;
+		}
+	}
+	return result;
+}
+
+template <typename T>
+image<T> image<T>::multy(const image<T>& a)
+{
+	if (getcols() != a.getrows())
+		throw std::invalid_argument("Cols must be the same size as the rows of the other matrix");
+
+	image<T> result(getrows(), a.getcols(), false);
+	for (int i = 0; i < getrows(); ++i)
+	{
+		for (int j = 0; j < a.getcols(); ++j)
+		{
+			T sum = T{};
+
+			for (int k = 0; k < getcols(); ++k)
+			{
+				sum += (*this)(i, k) * a(k, j);
+			}
+			result(i, j) = sum;
+		}
+	}
+	return result;
+}
+
+template <>
+image<bool> image<bool>::multy(const image<bool>& a)
+{
+	if (a.getrows() != getrows() || a.getcols() != getcols())
+		throw std::invalid_argument("Bool images must have the same size");
+
+	image<bool> result(getrows(), getcols(), false);
+	for (int i = 0; i < getrows(); ++i)
+	{
+		for (int j = 0; j < getcols(); ++j)
+		{
+			result(i, j) = a(i, j) && (*this)(i, j);
+		}
+	}
+	return result;
+}
+export template <typename T>
+std::ostream& operator<<(std::ostream& out, const image<T>& img)
+{
+	for (int i = 0; i < img.getrows(); ++i)
+	{
+		for (int j = 0; j < img.getcols(); ++j)
+		{
+			out << img(i, j) << " ";
+
 		}
 		out << "\n";
 	}
 	return out;
-}
-export template <typename T>
-image<T> operator*(const image<T>& a, const image<T>& b)
-{
-	if constexpr (std::is_same_v<T, bool>)
-	{
-		if (a.getrows() != b.getrows() || a.getcols() != b.getcols())
-		{
-			throw std::invalid_argument("Bool images must have the same size");
-		}
-		image<T> result(a.getrows(), a.getcols(), false);
-
-		for (int i = 0; i < a.getrows(); ++i)
-		{
-			for (int j = 0; j < a.getcols(); ++j)
-			{
-				result(i, j) = a(i, j) && b(i, j);
-			}
-		}
-		return result;
-	}
-	else {
-		if (a.getcols() != b.getrows()) {
-			throw std::invalid_argument("Cols must be the save size as the rows of the other matrix");
-		}
-		image<T> result(a.getrows(), b.getcols(), false);
-		for (int i = 0; i < a.getrows(); ++i) {
-			for (int j = 0; j < b.getcols(); ++j) {
-
-				T sum = T{};
-
-				for (int k = 0; k < a.getcols(); ++k) {
-					sum += a(i, k) * b(k, j);
-				}
-				result(i, j) = sum;
-			}
-		}
-		return result;
-	}
-}
-export template <typename T>
-image<T> operator+(const image<T>& a, const image<T>& b)
-{
-	int max_rows = std::max(a.getrows(), b.getrows());
-	int max_cols = std::max(a.getcols(), b.getcols());
-	image<T> result(max_rows, max_cols, false);
-	for (int i = 0; i < max_rows; ++i) {
-		for (int j = 0; j < max_cols; ++j) {
-			T first = T{};
-			T second = T{};
-			if (i < a.getrows() && j < a.getcols()) {
-				first = a(i, j);
-			}
-			if (i < b.getrows() && j < b.getcols()) {
-				second = b(i, j);
-			}
-			result(i, j) = first + second;
-		}
-	}
-	return result;
-}
-export template <typename T>
-image<T> operator-(const image<T>& a, const image<T>& b)
-{
-	int max_rows = std::max(a.getrows(), b.getrows());
-	int max_cols = std::max(a.getcols(), b.getcols());
-	image<T> result(max_rows, max_cols, false);
-	for (int i = 0; i < max_rows; ++i) {
-		for (int j = 0; j < max_cols; ++j) {
-			T first = T{};
-			T second = T{};
-
-			if (i < a.getrows() && j < a.getcols()) {
-				first = a(i, j);
-			}
-			if (i < b.getrows() && j < b.getcols()) {
-				second = b(i, j);
-			}
-			result(i, j) = first - second;
-		}
-	}
-	return result;
-}
-export template <typename T>
-image<T> operator*(const image<T>& a, const int& num)
-{
-	image<T> result(a.getrows(), a.getcols(), false);
-	for (int i = 0; i < a.getrows(); ++i)
-	{
-		for (int j = 0; j < a.getcols(); ++j)
-		{
-			result(i, j) = a(i, j) * num;
-		}
-	}
-	return result;
-}
-export template <typename T>
-image<T> operator+(const image<T>& a, const int& num)
-{
-	image<T> result(a.getrows(), a.getcols(), false);
-
-	for (int i = 0; i < a.getrows(); ++i)
-	{
-		for (int j = 0; j < a.getcols(); ++j)
-		{
-			result(i, j) = a(i, j) + num;
-		}
-	}
-	return result;
-}
-export template <typename T>
-T invertedvalue(T value)
-{
-	if constexpr (std::is_same_v<T, bool>)
-	{
-		return !value;
-	}
-	else
-	{
-		return -value;
-	}
-}
-export template <typename T>
-image<T> operator!(const image<T>& a)
-{
-	image<T> result(a.getrows(), a.getcols(), false);
-	for (int i = 0; i < a.getrows(); ++i)
-	{
-		for (int j = 0; j < a.getcols(); ++j)
-		{
-			result(i, j) = invertedvalue(a(i, j));
-		}
-	}
-	return result;
-}
-export template <typename T>
-bool operator==(const image<T>& a, const image<T>& b)
-{
-	if (a.getrows() != b.getrows() || a.getcols() != b.getcols())
-	{
-		return false;
-	}
-	for (int i = 0; i < a.getrows(); ++i)
-	{
-		for (int j = 0; j < a.getcols(); ++j)
-		{
-			if constexpr (std::is_same_v<T, float>)
-			{
-				if (std::abs(a(i, j) - b(i, j)) > image<T>::epsilon)
-				{
-					return false;
-				}
-			}
-			else
-			{
-				if (a(i, j) != b(i, j))
-				{
-					return false;
-				}
-			}
-		}	
-	}
-	return true;
-}
-export template <typename T>
-bool operator!=(const image<T>& a, const image<T>& b)
-{
-	return !(a == b);
 }

@@ -1,9 +1,9 @@
+import std;
 import classes;
 import functions;
 import menu;
-import std;
 
-int main() 
+int main()
 {
 	menuf();
 	return 0;
