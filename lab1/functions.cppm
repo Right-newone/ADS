@@ -10,8 +10,13 @@ export void readnwrite() {
     std::cout << "\n";
 }
 export void mult() {
-    image<short> img2(2, 3, true);
-    image<short> img3(3, 2, true);
+    image<short> img2(2, 2, false);
+    image<short> img3(2, 2, false);
+    img2(0, 0) = 10;  img2(0, 1) = -5;
+    img2(1, 0) = 20;  img2(1, 1) = 3;
+
+    img3(0, 0) = 2;   img3(0, 1) = 4;
+    img3(1, 0) = -1;  img3(1, 1) = 10;
     image<short> result = img2 * img3;
     std::cout << img2;
     std::cout << "   *    \n";
@@ -34,8 +39,16 @@ export void summ()
 }
 export void dif()
 {
-    image<short> img2(2, 3, true);
-    image<short> img3(3, 2, true);
+    image<short> img2(2, 3, false);
+    image<short> img3(3, 2, false);
+
+    img2(0, 0) = 100; img2(0, 1) = -50; img2(0, 2) = 20;
+    img2(1, 0) = 10;  img2(1, 1) = 30;  img2(1, 2) = -40;
+
+    img3(0, 0) = 15;  img3(0, 1) = 25;
+    img3(1, 0) = -10; img3(1, 1) = 5;
+    img3(2, 0) = 8;   img3(2, 1) = -12;
+
     image<short> result = img2 - img3;
     std::cout << img2;
     std::cout << "   -    \n";

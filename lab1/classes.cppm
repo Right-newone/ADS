@@ -17,21 +17,20 @@ template <>
 char randomvalue<char>() {
 	std::random_device seed;
 	std::mt19937 generator(seed());
-	std::uniform_int_distribution<int> distribution(1, 100);
+	std::uniform_int_distribution<int> distribution(std::numeric_limits<char>::min(), std::numeric_limits<char>::max());
 	return static_cast<char>(distribution(generator));
 }
 template<>
 short randomvalue<short>() {
 	std::random_device seed;
 	std::mt19937 generator(seed());
-	std::uniform_int_distribution<short> distribution(1, 100);
+	std::uniform_int_distribution<short> distribution(std::numeric_limits<short>::min(), std::numeric_limits<short>::max());
 	return distribution(generator);
-}
-template<>
+}template<>
 float randomvalue<float>() {
 	std::random_device seed;
 	std::mt19937 generator(seed());
-	std::uniform_real_distribution<float> distribution(1.0f, 100.0f);
+	std::uniform_real_distribution<float> distribution(std::numeric_limits<float>::min(), std::numeric_limits<float>::max());
 	return distribution(generator);
 }
 
@@ -52,6 +51,14 @@ private:
 	int _rows = 0;
 	int _cols = 0;
 	T* _data = nullptr;
+	
+	template <typename T>
+	bool equal(const T& a, const T& b, double epsilon) {
+		return a == b;
+	}
+	bool equal(float a, float b, double epsilon) {
+		return std::abs(a - b) <= epsilon;
+	}
 public:
 	const double epsilon = 1e-6;
 	image(int rows, int cols, bool randomfill) : _rows(rows), _cols(cols)
@@ -73,7 +80,7 @@ public:
 
 	image(const image& other) : _rows(other._rows), _cols(other._cols), _data(new T[other._rows * other._cols])
 	{
-		for (int i = 0; i < _rows * _cols; ++i)
+		for (int i = 0; i < other._rows * other._cols; ++i)
 		{
 			_data[i] = other._data[i];
 		}
@@ -147,22 +154,146 @@ public:
 		double result = (sum / (cells * maxvalue));
 		return result;
 	}
+	
+	template <typename T>
+	image<T> multy(const image<T>& a) const
+	{
+		if (a.getrows() != getrows() || a.getcols() != getcols())
+		{
+			throw std::invalid_argument("Images must have the same size");
+		}
 
-	image<T> multy(const image& a);
+		image<T> result(getrows(), getcols(), false);
+		for (int i = 0; i < getrows(); ++i)
+		{
+			for (int j = 0; j < getcols(); ++j)
+			{
+				T x = (*this)(i, j);
+				T y = a(i, j);
 
-	image<T> operator*(const image<T>& a)
+				if (std::numeric_limits<T>::is_integer && std::numeric_limits<T>::digits > 1)
+				{
+					if (x != 0 && y != 0)
+					{
+						if (std::numeric_limits<T>::is_signed)
+						{
+							if (x == -1 && y == std::numeric_limits<T>::min()) throw std::overflow_error("overflow in multy");
+							if (y == -1 && x == std::numeric_limits<T>::min()) throw std::overflow_error("overflow in multy");
+
+							if (x > 0)
+							{
+								if (y > 0 && x > std::numeric_limits<T>::max() / y) throw std::overflow_error("overflow in multy");
+								if (y < 0 && y < std::numeric_limits<T>::min() / x) throw std::overflow_error("overflow in multy");
+							}
+							else if (x < 0)
+							{
+								if (y > 0 && x < std::numeric_limits<T>::min() / y) throw std::overflow_error("overflow in multy");
+								if (y < 0 && x < std::numeric_limits<T>::max() / y) throw std::overflow_error("overflow in multy");
+							}
+						}
+						else
+						{
+							if (x > std::numeric_limits<T>::max() / y) throw std::overflow_error("overflow in multy");
+						}
+					}
+				}
+				else if (!std::numeric_limits<T>::is_integer)
+				{
+					if (std::isinf(static_cast<double>(x) * static_cast<double>(y)))
+						throw std::overflow_error("overflow in multy");
+				}
+
+				result(i, j) = x * y;
+			}
+		}
+		return result;
+	}
+
+	image<T> operator*(const image<T>& a) 
 	{
 		return multy(a);
 	}
 	
-	image<T> sum(const image& a);
+	template <typename T>
+	image<T> sum(const image<T>& a) 
+	{
+		int max_rows = std::max(a.getrows(), getrows());
+		int max_cols = std::max(a.getcols(), getcols());
+		image<T> result(max_rows, max_cols, false);
+		for (int i = 0; i < max_rows; ++i)
+		{
+			for (int j = 0; j < max_cols; ++j)
+			{
+				T first = T{};
+				T second = T{};
+				if (i < a.getrows() && j < a.getcols()) first = a(i, j);
+				if (i < getrows() && j < getcols()) second = (*this)(i, j);
 
-	image<T> operator+(const image<T>& a)
+				if (std::numeric_limits<T>::digits == 1)
+				{
+					result(i, j) = first || second;
+				}
+				else
+				{
+					if (std::numeric_limits<T>::is_integer)
+					{
+						if (std::numeric_limits<T>::is_signed)
+						{
+							if (second > 0 && first > std::numeric_limits<T>::max() - second)
+								throw std::overflow_error("overflow in sum");
+							if (second < 0 && first < std::numeric_limits<T>::min() - second)
+								throw std::overflow_error("overflow in sum");
+						}
+						else
+						{
+							if (first > std::numeric_limits<T>::max() - second)
+								throw std::overflow_error("overflow in sum");
+						}
+					}
+					else
+					{
+						if (std::isinf(static_cast<double>(first) + static_cast<double>(second)))
+							throw std::overflow_error("overflow in sum");
+					}
+
+					result(i, j) = first + second;
+				}
+			}
+		}
+		return result;
+	}
+
+	template <>
+	image<bool> sum(const image<bool>& a)
+	{
+		int max_rows = std::max(a.getrows(), getrows());
+		int max_cols = std::max(a.getcols(), getcols());
+		image<bool> result(max_rows, max_cols, false);
+		for (int i = 0; i < max_rows; ++i)
+		{
+			for (int j = 0; j < max_cols; ++j)
+			{
+				bool first = false;
+				bool second = false;
+
+				if (i < a.getrows() && j < a.getcols())
+					first = a(i, j);
+
+				if (i < getrows() && j < getcols())
+					second = (*this)(i, j);
+
+				result(i, j) = first || second;
+			}
+		}
+		return result;
+	}
+
+	image<T> operator+(const image<T>& a) 
 	{
 		return sum(a);
 	}
 
-	image<T> operator-(const image<T>& a)
+	image<T> operator-(const image<T>& a) const
 	{
 		int max_rows = std::max(a._rows, _rows);
 		int max_cols = std::max(a._cols, _cols);
@@ -172,12 +303,30 @@ public:
 				T first = T{};
 				T second = T{};
 
-				if (i < a._rows && j < a._cols) {
-					first = a(i, j);
+				if (i < a._rows && j < a._cols) first = a(i, j);
+				if (i < _rows && j < _cols) second = (*this)(i, j);
+
+				if (std::numeric_limits<T>::is_integer && std::numeric_limits<T>::digits > 1)
+				{
+					if (std::numeric_limits<T>::is_signed)
+					{
+						if (second > 0 && first < std::numeric_limits<T>::min() + second)
+							throw std::overflow_error("overflow in subtraction");
+						if (second < 0 && first > std::numeric_limits<T>::max() + second)
+							throw std::overflow_error("overflow in subtraction");
+					}
+					else
+					{
+						if (first < second)
+							throw std::overflow_error("overflow in subtraction");
+					}
 				}
-				if (i < _rows && j < _cols) {
-					second = (*this)(i, j);
+				else if (!std::numeric_limits<T>::is_integer)
+				{
+					if (std::isinf(static_cast<double>(first) - static_cast<double>(second)))
+						throw std::overflow_error("overflow in subtraction");
 				}
+
 				result(i, j) = second - first;
 			}
 		}
@@ -223,13 +372,7 @@ public:
 		}
 		return result;
 	}
-	template <typename T>
-	bool equal(const T& a, const T& b, double epsilon) {
-		return a == b;
-	}
-	bool equal(float a, float b, double epsilon) {
-		return std::abs(a - b) <= epsilon;
-	}
+
 	bool operator==(const image<T>& a)
 	{
 		if (a._rows != _rows || a._cols != _cols)
@@ -247,104 +390,13 @@ public:
 			}
 		}
 		return true;
-	}
+	}	
 
 	~image()
 	{
 		delete[] _data;
 	}
 };
-
-template <typename T>
-image<T> image<T>::sum(const image<T>& a)
-{
-	int max_rows = std::max(a.getrows(), getrows());
-	int max_cols = std::max(a.getcols(), getcols());
-	image<T> result(max_rows, max_cols, false);
-	for (int i = 0; i < max_rows; ++i)
-	{
-		for (int j = 0; j < max_cols; ++j)
-		{
-			T first = T{};
-			T second = T{};
-			if (i < a.getrows() && j < a.getcols())
-			{
-				first = a(i, j);
-			}
-			if (i < getrows() && j < getcols())
-			{
-				second = (*this)(i, j);
-			}
-			result(i, j) = first+second;
-		}
-	}
-	return result;
-}
-
-template <>
-image<bool> image<bool>::sum(const image<bool>& a)
-{
-	int max_rows = std::max(a.getrows(), getrows());
-	int max_cols = std::max(a.getcols(), getcols());
-	image<bool> result(max_rows, max_cols, false);
-	for (int i = 0; i < max_rows; ++i)
-	{
-		for (int j = 0; j < max_cols; ++j)
-		{
-			bool first = false;
-			bool second = false;
-
-			if (i < a.getrows() && j < a.getcols())
-				first = a(i, j);
-
-			if (i < getrows() && j < getcols())
-				second = (*this)(i, j);
-
-			result(i, j) = first || second;
-		}
-	}
-	return result;
-}
-
-template <typename T>
-image<T> image<T>::multy(const image<T>& a)
-{
-	if (getcols() != a.getrows())
-		throw std::invalid_argument("Cols must be the same size as the rows of the other matrix");
-
-	image<T> result(getrows(), a.getcols(), false);
-	for (int i = 0; i < getrows(); ++i)
-	{
-		for (int j = 0; j < a.getcols(); ++j)
-		{
-			T sum = T{};
-
-			for (int k = 0; k < getcols(); ++k)
-			{
-				sum += (*this)(i, k) * a(k, j);
-			}
-			result(i, j) = sum;
-		}
-	}
-	return result;
-}
-
-template <>
-image<bool> image<bool>::multy(const image<bool>& a)
-{
-	if (a.getrows() != getrows() || a.getcols() != getcols())
-		throw std::invalid_argument("Bool images must have the same size");
-
-	image<bool> result(getrows(), getcols(), false);
-	for (int i = 0; i < getrows(); ++i)
-	{
-		for (int j = 0; j < getcols(); ++j)
-		{
-			result(i, j) = a(i, j) && (*this)(i, j);
-		}
-	}
-	return result;
-}
 export template <typename T>
 std::ostream& operator<<(std::ostream& out, const image<T>& img)
 {
