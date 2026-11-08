@@ -30,4 +30,4 @@ cmake --build build
 
 ## Запуск
 
-.\build\ASD\lab1.exe
+.\build\ADS\lab1.exe
