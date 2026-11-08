@@ -120,16 +120,70 @@ public:
 
     LinkedList<T>& push_head(const LinkedList<T>& other);
 
-    LinkedList<T>& pop_head(const T& value)
+    LinkedList<T>& pop_head()
     {
         if (_head == nullptr)
         {
-            return;
+            throw std::out_of_range("LinkedList::pop_head: empty list");
         }
 
-        Node* cur = _head;
+        Node* old_head = _head;
+        _head = _head->_next;
 
+        if (_head != nullptr)
+        {
+            _head->_prev = nullptr;
+        }
+        else
+        {
+            _tail = nullptr;
+        }
 
+        delete old_head;
+        --_size;
+
+        return *this;
+    }
+
+    LinkedList<T>& pop_tail()
+    {
+        if (_tail == nullptr)
+        {
+            throw std::out_of_range("LinkedList::pop_tail: empty list");
+        }
+
+        Node* old_tail = _tail;
+        _tail = _tail->_prev;
+
+        if (_tail != nullptr)
+        {
+            _tail->_next = nullptr;
+        }
+        else
+        {
+            _head = nullptr;
+        }
+
+        delete old_tail;
+        --_size;
+
+        return *this;
+    }
+
+    LinkedList<T>& delete_specified(const T& delete_node)
+    {
+        if (_head == nullptr)
+        {
+            return *this;
+        }
+
+        Node* cur = cur->_head;
+        while ()
+        {
+
+        }
+
+        return *this;
     }
 };
 
@@ -159,7 +213,7 @@ LinkedList<T>& LinkedList<T>::push_head(const LinkedList<T>& other)
     return *this;
 }
 
-template <typename T>
+export template <typename T>
 std::ostream& operator<<(std::ostream& out, const LinkedList<T>& list)
 {
     for (const Node<T>* tmp = list._head; tmp != nullptr; tmp = tmp->_next)
