@@ -52,7 +52,7 @@ public:
         {
             Node* next = cur->_next;
             delete cur;
-            cur->next;
+            cur = next;
         }
     }
 
@@ -105,7 +105,7 @@ public:
     LinkedList<T>& push_head(const T& value)
     {
         Node* new_node = new Node(value, nullptr, _head);
-        if (_head == nullptr)
+        if (_head != nullptr)
         {
             _head->_prev = new_node;
         }
@@ -177,10 +177,32 @@ public:
             return *this;
         }
 
-        Node* cur = cur->_head;
-        while ()
+        Node* cur = _head;
+        while (cur)
         {
-
+            Node* next = cur->_next;
+            if (cur->_data == delete_node)
+            {
+                if (cur->_prev != nullptr)
+                {
+                    cur->_prev->_next = cur->_next;
+                }
+                else
+                {
+                    _head = cur->_next;
+                }
+                if (cur->_next != nullptr)
+                {
+                    cur->_next->_prev = cur->_prev;
+                }
+                else
+                {
+                    _tail = cur->_prev;
+                }
+                delete cur;
+                --_size;
+            }
+            cur = next;
         }
 
         return *this;
@@ -216,9 +238,13 @@ LinkedList<T>& LinkedList<T>::push_head(const LinkedList<T>& other)
 export template <typename T>
 std::ostream& operator<<(std::ostream& out, const LinkedList<T>& list)
 {
-    for (const Node<T>* tmp = list._head; tmp != nullptr; tmp = tmp->_next)
+    for (std::size_t i = 0; i < list.size(); ++i)
     {
-        out << tmp->_data << " ";
+        if (i != 0)
+        {
+            out << ' ';
+        }
+        out << list.at(i);
     }
     return out;
 }
