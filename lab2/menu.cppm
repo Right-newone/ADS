@@ -1,26 +1,63 @@
 export module menu;
 import std;
 import classes;
+import functions;
 
 export int menu_f()
 {
     while (true)
     {
-        std::cout << "[1] Image read-write demonstration" << std::endl;
-        std::cout << "[2] End session" << std::endl;
+        std::cout << "\n[1] Assignment demonstration" << std::endl;
+        std::cout << "[2] Push_tail demonstration" << std::endl;
+        std::cout << "[3] Push_tail_list demonstration" << std::endl;
+        std::cout << "[4] Push_head demonstration" << std::endl;
+        std::cout << "[5] Push_head_list demonstration" << std::endl;
+        std::cout << "[6] Pop_head demonstration" << std::endl;
+        std::cout << "[7] Pop_tail demonstration" << std::endl;
+        std::cout << "[8] Delete_node demonstration" << std::endl;
+        std::cout << "[9] " << std::endl;
+        std::cout << "[10] " << std::endl;
+        std::cout << "[11] End session" << std::endl;
         int choice = 0;
         std::cout << "\nEnter your choice: ";
         std::cin >> choice;
         switch (choice)
         {
         case 1:
-            std::cout << "Hi" << std::endl;
+            assign();
             break;
         case 2:
+            push_tail_demo();
+            break;
+        case 3:
+            push_tail_list_demo();
+            break;
+        case 4:
+            push_head_demo();
+            break;
+        case 5:
+            push_head_list_demo();
+            break;
+        case 6:
+            pop_head_demo();
+            break;
+        case 7:
+            pop_tail_demo();
+            break;
+        case 8:
+            delete_node_demo();
+            break;
+        case 9:
+            pop_tail_demo();
+            break;
+        case 10:
+            pop_tail_demo();
+            break;
+        case 11:
             std::cout << "End of the session";
             return 0;
         default:
-            std::cout << "Wrong choice, try again from [1-1]" << std::endl;
+            std::cout << "Wrong choice, try again from [1-11]" << std::endl;
             break;
         }
     }

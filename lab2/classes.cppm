@@ -10,18 +10,21 @@ struct Node
     Node(T data, Node* next, Node* prev) : _data(data), _next(next), _prev(prev) {};
 };
 
+
 export template <typename T>
 class LinkedList
 {
 private:
     Node<T>* _head = nullptr;
     Node<T>* _tail= nullptr;
-    size_t _size = 0;
+    std::size_t _size = 0;
 public:
+
+    std::size_t size() const noexcept { return _size; }
 
     void push_back(const T& value)
     {
-        Node* new_Node = new Node(value, _tail, nullptr);
+        Node<T>* new_Node = new Node<T>(value, nullptr, _tail);
 
         if (_tail != nullptr)
         {
@@ -35,11 +38,11 @@ public:
         ++_size;
     }
 
-    LinkedList() {};
+    LinkedList()=default;
 
     LinkedList(const LinkedList<T> &other) : _head(nullptr), _tail(nullptr), _size(0)
     {
-        for (Node* cur = other._head; cur != nullptr; cur = cur->_next)
+        for (Node<T>* cur = other._head; cur != nullptr; cur = cur->_next)
         {
             push_back(cur->_data);
         }
@@ -47,10 +50,10 @@ public:
 
     ~LinkedList()
     {
-        Node* cur = _head;
+        Node<T>* cur = _head;
         while (cur)
         {
-            Node* next = cur->_next;
+            Node<T>* next = cur->_next;
             delete cur;
             cur = next;
         }
@@ -63,19 +66,19 @@ public:
             return *this;
         }
 
-        Node* cur = _head;
+        Node<T>* cur = _head;
         while (cur)
         {
-            Node* next = cur->_next;
+            Node<T>* next = cur->_next;
             delete cur;
-            cur->_next;
+            cur = next;
         }
 
         _head = nullptr;
         _tail = nullptr;
         _size = 0;
 
-        for (Node* tmp = other._head;tmp  != nullptr; tmp= tmp->_next)
+        for (Node<T>* tmp = other._head;tmp  != nullptr; tmp= tmp->_next)
         {
             push_back(tmp->_data);
         }
@@ -85,7 +88,7 @@ public:
 
     LinkedList<T>& push_tail(const T &value)
     {
-        Node* new_node = new Node(value, _tail, nullptr);
+        Node<T>* new_node = new Node<T>(value, nullptr, _tail);
         if (_tail != nullptr)
         {
             _tail->_next = new_node;
@@ -104,7 +107,7 @@ public:
     
     LinkedList<T>& push_head(const T& value)
     {
-        Node* new_node = new Node(value, nullptr, _head);
+        Node<T>* new_node = new Node<T>(value, nullptr, _head);
         if (_head != nullptr)
         {
             _head->_prev = new_node;
@@ -127,7 +130,7 @@ public:
             throw std::out_of_range("LinkedList::pop_head: empty list");
         }
 
-        Node* old_head = _head;
+        Node<T>* old_head = _head;
         _head = _head->_next;
 
         if (_head != nullptr)
@@ -152,7 +155,7 @@ public:
             throw std::out_of_range("LinkedList::pop_tail: empty list");
         }
 
-        Node* old_tail = _tail;
+        Node<T>* old_tail = _tail;
         _tail = _tail->_prev;
 
         if (_tail != nullptr)
@@ -177,10 +180,10 @@ public:
             return *this;
         }
 
-        Node* cur = _head;
+        Node<T>* cur = _head;
         while (cur)
         {
-            Node* next = cur->_next;
+            Node<T>* next = cur->_next;
             if (cur->_data == delete_node)
             {
                 if (cur->_prev != nullptr)
@@ -207,7 +210,7 @@ public:
         return *this;
     }
 
-    const T& read_by_idx(const int& idx) const
+    const T& read_by_idx(long long idx) const
     {
         if (_size == 0)
         {
@@ -221,7 +224,7 @@ public:
             r += n;
         }
 
-        Node* cur = _head;
+        Node<T>* cur = _head;
         for (long long i = 0; i < r; ++i)
         {
             cur = cur->_next;
@@ -229,7 +232,7 @@ public:
         return cur->_data;
     }
 
-    T& write_by_idx(const int& idx)
+    T& write_by_idx(long long idx)
     {
         if (_size == 0)
         {
@@ -243,7 +246,7 @@ public:
             r += n;
         }
 
-        Node* cur = _head;
+        Node<T>* cur = _head;
         for (long long i = 0; i < r; ++i)
         {
             cur = cur->_next;
@@ -255,7 +258,7 @@ public:
 template <typename T>
 LinkedList<T>& LinkedList<T>::push_tail(const LinkedList<T>& other)
 {
-    for (Node* tmp = other._head; tmp != nullptr; tmp = tmp->_next)
+    for (Node<T>* tmp = other._head; tmp != nullptr; tmp = tmp->_next)
     {
         push_back(tmp->_data);
     }
@@ -270,7 +273,7 @@ LinkedList<T>& LinkedList<T>::push_head(const LinkedList<T>& other)
         return *this;
     }
 
-    for (Node* tmp = other._tail; tmp != nullptr; tmp = tmp->_prev)
+    for (Node<T>* tmp = other._tail; tmp != nullptr; tmp = tmp->_prev)
     {
         push_head(tmp->_data);
     }
@@ -283,11 +286,72 @@ std::ostream& operator<<(std::ostream& out, const LinkedList<T>& list)
 {
     for (std::size_t i = 0; i < list.size(); ++i)
     {
-        if (i != 0)
-        {
-            out << ' ';
-        }
-        out << list.at(i);
+        if (i != 0) out << ' ';
+        out << list.read_by_idx(static_cast<long long>(i));
     }
     return out;
+}
+
+export template <typename T>
+LinkedList<T> random_list(std::mt19937& generator, std::size_t count_nodes)
+{
+    return LinkedList<T>{};
+}
+template <>
+LinkedList<int> random_list<int>(std::mt19937& generator, std::size_t count_nodes)
+{
+    std::uniform_int_distribution<int> distribution(0, 100);
+    LinkedList<int> list;
+
+    for (std::size_t i = 0; i < count_nodes; ++i)
+    {
+        int random_value = distribution(generator);
+        list.push_tail(random_value);
+    }
+    return list;
+}
+template <>
+LinkedList<double> random_list<double>(std::mt19937& generator, std::size_t count_nodes)
+{
+    std::uniform_real_distribution<double> distribution(0.0, 100.0);
+
+    LinkedList<double> list;
+
+    for (std::size_t i = 0; i < count_nodes; ++i)
+    {
+        double random_value = distribution(generator);
+        list.push_tail(random_value);
+    }
+
+    return list;
+}
+template <>
+LinkedList<short> random_list<short>(std::mt19937& generator, std::size_t count_nodes)
+{
+    std::uniform_int_distribution<short> distribution(0, 100);
+
+    LinkedList<short> list;
+
+    for (std::size_t i = 0; i < count_nodes; ++i)
+    {
+        short random_value = distribution(generator);
+        list.push_tail(random_value);
+    }
+
+    return list;
+}
+template <>
+LinkedList<float> random_list<float>(std::mt19937& generator, std::size_t count_nodes)
+{
+    std::uniform_real_distribution<float> distribution(0.0, 100.0f);
+
+    LinkedList<float> list;
+
+    for (std::size_t i = 0; i < count_nodes; ++i)
+    {
+        float random_value = distribution(generator);
+        list.push_tail(random_value);
+    }
+
+    return list;
 }
