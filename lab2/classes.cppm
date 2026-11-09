@@ -204,8 +204,51 @@ public:
             }
             cur = next;
         }
-
         return *this;
+    }
+
+    const T& read_by_idx(const int& idx) const
+    {
+        if (_size == 0)
+        {
+            throw std::out_of_range("LinkedList index out of range");
+        }
+        long long n = static_cast<long long>(_size);
+        long long r = idx % n;
+
+        if (r < 0)
+        {
+            r += n;
+        }
+
+        Node* cur = _head;
+        for (long long i = 0; i < r; ++i)
+        {
+            cur = cur->_next;
+        }
+        return cur->_data;
+    }
+
+    T& write_by_idx(const int& idx)
+    {
+        if (_size == 0)
+        {
+            throw std::out_of_range("LinkedList index out of range");
+        }
+        long long n = static_cast<long long>(_size);
+        long long r = idx % n;
+
+        if (r < 0)
+        {
+            r += n;
+        }
+
+        Node* cur = _head;
+        for (long long i = 0; i < r; ++i)
+        {
+            cur = cur->_next;
+        }
+        return cur->_data;
     }
 };
 
