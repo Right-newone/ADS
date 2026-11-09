@@ -15,9 +15,10 @@ export int menu_f()
         std::cout << "[6] Pop_head demonstration" << std::endl;
         std::cout << "[7] Pop_tail demonstration" << std::endl;
         std::cout << "[8] Delete_node demonstration" << std::endl;
-        std::cout << "[9] " << std::endl;
-        std::cout << "[10] " << std::endl;
-        std::cout << "[11] End session" << std::endl;
+        std::cout << "[9] Read_by_idx demonstration" << std::endl;
+        std::cout << "[10] Write_by_idx demonstration" << std::endl;
+        std::cout << "[11] Output demonstration" << std::endl;
+        std::cout << "[12] End session" << std::endl;
         int choice = 0;
         std::cout << "\nEnter your choice: ";
         std::cin >> choice;
@@ -48,16 +49,19 @@ export int menu_f()
             delete_node_demo();
             break;
         case 9:
-            pop_tail_demo();
+            read_by_idx_demo();
             break;
         case 10:
-            pop_tail_demo();
+            write_by_idx_demo();
             break;
         case 11:
+            output_demo();
+            break;
+        case 12:
             std::cout << "End of the session";
             return 0;
         default:
-            std::cout << "Wrong choice, try again from [1-11]" << std::endl;
+            std::cout << "Wrong choice, try again from [1-12]" << std::endl;
             break;
         }
     }

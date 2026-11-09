@@ -10,7 +10,6 @@ struct Node
     Node(T data, Node* next, Node* prev) : _data(data), _next(next), _prev(prev) {};
 };
 
-
 export template <typename T>
 class LinkedList
 {
@@ -107,7 +106,7 @@ public:
     
     LinkedList<T>& push_head(const T& value)
     {
-        Node<T>* new_node = new Node<T>(value, nullptr, _head);
+        Node<T>* new_node = new Node<T>(value, _head, nullptr);
         if (_head != nullptr)
         {
             _head->_prev = new_node;
@@ -287,7 +286,7 @@ std::ostream& operator<<(std::ostream& out, const LinkedList<T>& list)
     for (std::size_t i = 0; i < list.size(); ++i)
     {
         if (i != 0) out << ' ';
-        out << list.read_by_idx(static_cast<long long>(i));
+        out << list.read_by_idx(i);
     }
     return out;
 }

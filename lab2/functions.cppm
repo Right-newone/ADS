@@ -173,8 +173,26 @@ export void delete_node_demo()
 	std::cin >> value;
 	list.delete_specified(value);
 
-	std::cout << "After pop_tail" << std::endl;
+	std::cout << "After delete_specified" << std::endl;
 	std::cout << "list: " << list << std::endl;
+}
+
+export void read_by_idx_demo()
+{
+	std::mt19937 generator;
+	std::size_t count_nodes = 0;
+	generation_list1(generator, count_nodes);
+
+	LinkedList<int> list = random_list<int>(generator, count_nodes);
+
+	long long idx = 0;
+	std::cout << "Enter your idx to read from: ";
+	std::cin >> idx;
+
+	int value = list.read_by_idx(idx);
+	std::cout << "Value at index" << idx << " is: " << value << '\n';
+
+	std::cout << "Full list: " << list << '\n';
 }
 
 export void write_by_idx_demo()
@@ -184,13 +202,30 @@ export void write_by_idx_demo()
 	generation_list1(generator, count_nodes);
 
 	LinkedList<int> list = random_list<int>(generator, count_nodes);
-	std::cout << "list: " << list << std::endl;
 
-	int value = 0;
-	std::cout << "Enter your value to delete: ";
-	std::cin >> value;
-	list.write_by_idx(value);
+	std::cout << "Initial list: " << list << std::endl;
 
-	std::cout << "After pop_tail" << std::endl;
+	long long idx = 0;
+	std::cout << "Enter your idx to write to: ";
+	std::cin >> idx;
+
+	int new_value = 0;
+	std::cout << "Enter new value to put at this index: ";
+	std::cin >> new_value;
+	
+	list.write_by_idx(idx) = new_value;
+
+	std::cout << "After write_by_idx" << std::endl;
 	std::cout << "list: " << list << std::endl;
+}
+
+export void output_demo()
+{
+	std::mt19937 generator;
+	std::size_t count_nodes = 0;
+	generation_list1(generator, count_nodes);
+
+	LinkedList<int> list = random_list<int>(generator, count_nodes);
+
+	std::cout << "output of the list: " << list << std::endl;
 }
