@@ -19,7 +19,10 @@ private:
     std::size_t _size = 0;
 public:
 
-    std::size_t size() const noexcept { return _size; }
+    std::size_t size() const noexcept
+    {
+        return _size; 
+    }
 
     void push_back(const T& value)
     {
@@ -251,6 +254,26 @@ public:
             cur = cur->_next;
         }
         return cur->_data;
+    }
+
+    LinkedList<T>& reversed_list()
+    {
+        if (_head == nullptr)
+        {
+            return *this;
+        }
+
+        Node<T>* cur = _head;
+        Node<T>* tmp= nullptr;
+        while (cur)
+        {
+            tmp = cur->_prev;
+            cur->_prev = cur->_next;
+            cur->_next = tmp;
+            cur = cur->_prev;
+        }
+        std::swap(_head, _tail);
+        return *this;
     }
 };
 

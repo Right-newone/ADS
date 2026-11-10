@@ -229,3 +229,15 @@ export void output_demo()
 
 	std::cout << "output of the list: " << list << std::endl;
 }
+
+export void reversed_list_demo()
+{
+	std::mt19937 generator;
+	std::size_t count_nodes = 0;
+	generation_list1(generator, count_nodes);
+
+	LinkedList<int> list = random_list<int>(generator, count_nodes);
+
+	std::cout << "list before reverse: " << list << std::endl;
+	std::cout << "reversed list: " << list.reversed_list() << std::endl;
+}

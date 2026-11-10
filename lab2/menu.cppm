@@ -18,7 +18,8 @@ export int menu_f()
         std::cout << "[9] Read_by_idx demonstration" << std::endl;
         std::cout << "[10] Write_by_idx demonstration" << std::endl;
         std::cout << "[11] Output demonstration" << std::endl;
-        std::cout << "[12] End session" << std::endl;
+        std::cout << "[12] Reversing list demonstration" << std::endl;
+        std::cout << "[13] End session" << std::endl;
         int choice = 0;
         std::cout << "\nEnter your choice: ";
         std::cin >> choice;
@@ -58,10 +59,13 @@ export int menu_f()
             output_demo();
             break;
         case 12:
+            reversed_list_demo();
+            break;
+        case 13:
             std::cout << "End of the session";
             return 0;
         default:
-            std::cout << "Wrong choice, try again from [1-12]" << std::endl;
+            std::cout << "Wrong choice, try again from [1-13]" << std::endl;
             break;
         }
     }
