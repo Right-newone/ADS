@@ -123,7 +123,7 @@ export void push_head_list_demo()
 	std::cout << "list2: " << list2 << std::endl;
 	std::cout << "list: " << list << std::endl;
 
-	list.push_tail(list2);
+	list.push_head(list2);
 
 	std::cout << "After push_head_list" << std::endl;
 	std::cout << "list: " << list << std::endl;
@@ -240,4 +240,18 @@ export void reversed_list_demo()
 
 	std::cout << "list before reverse: " << list << std::endl;
 	std::cout << "reversed list: " << list.reversed_list() << std::endl;
+}
+
+export void copy_demo()
+{
+	std::mt19937 generator;
+	std::size_t count_nodes = 0;
+	generation_list1(generator, count_nodes);
+
+	LinkedList<int> list1 = random_list<int>(generator, count_nodes);
+
+	LinkedList<int> list2(list1);
+
+	std::cout << "list1: " << list1 << std::endl;
+	std::cout << "list2: " << list1 << std::endl;
 }
